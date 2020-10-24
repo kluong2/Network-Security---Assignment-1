@@ -8,6 +8,19 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
+import java.security.*;
+import java.security.spec.ECParameterSpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.security.interfaces.ECPublicKey;
+
+import javax.crypto.KeyAgreement;
+
+import java.util.*;
+import java.nio.ByteBuffer;
+import java.io.Console;
+
+import static javax.xml.bind.DatatypeConverter.printHexBinary;
+import static javax.xml.bind.DatatypeConverter.parseHexBinary;
 
 public class serverfunctions 
 {
@@ -18,10 +31,13 @@ public class serverfunctions
     private DataOutputStream out;
     
         String privatekey, encrypted, decrypted;
-        long publickey;
+        byte[] publickey;
         int port;
-    
-    public serverfunctions()
+        
+        KeyPairGenerator kpg;
+        KeyPair kp;
+            
+    public serverfunctions() throws Exception
     {
         socket = null;
         server = null;
@@ -29,12 +45,14 @@ public class serverfunctions
         out = null;
         
         this.privatekey = "";
-        this.publickey = 0;
+        this.publickey = null;
         this.encrypted = "";
         this.decrypted = "";
  
-       
-        
+        this.kpg = KeyPairGenerator.getInstance("EC");
+        this.kpg.initialize(256);     
+        this.kp = kpg.generateKeyPair();
+
         
     }
     
@@ -71,7 +89,7 @@ public class serverfunctions
   
     public void setpublickey()
     {
-        
+           this.publickey = kp.getPublic().getEncoded();
     }
     
     public void setprivatekey()
@@ -85,7 +103,8 @@ public class serverfunctions
         try
         { 
       out = new DataOutputStream(socket.getOutputStream());
-      out.writeLong(publickey);
+      //System.out.println(printHexBinary(this.publickey));
+      out.writeUTF(printHexBinary(this.publickey));
         } 
         catch(IOException i) 
         { 

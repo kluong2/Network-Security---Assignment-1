@@ -8,6 +8,19 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import java.security.*;
+import java.security.spec.ECParameterSpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.security.interfaces.ECPublicKey;
+
+import javax.crypto.KeyAgreement;
+
+import java.util.*;
+import java.nio.ByteBuffer;
+import java.io.Console;
+
+import static javax.xml.bind.DatatypeConverter.printHexBinary;
+import static javax.xml.bind.DatatypeConverter.parseHexBinary;
 
 public class clientfunctions 
 {
@@ -20,7 +33,7 @@ public class clientfunctions
     private String address;
     private int port;
     String encrypted, string;
-    long publickey;
+    byte[] publickey;
     
     public clientfunctions()
     {
@@ -33,7 +46,7 @@ public class clientfunctions
         this.port = port;
         this.encrypted = "";
         this.string = "";
-        this.publickey = 0;
+        this.publickey = null;
         
 
         
@@ -82,12 +95,14 @@ public class clientfunctions
    //Sets public key "publickey" by getting input from server. Make sure that you are connected to the server first!
    public void setpublickey()
    {
-       long publickey = 0;
+       
         try
         { 
+            
             //takes input from terminal 
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream())); 
-            publickey = in.readLong();
+            this.publickey = parseHexBinary(in.readUTF());
+            //System.out.println(printHexBinary(this.publickey));
         } 
         catch(UnknownHostException u) 
         { 
@@ -97,7 +112,7 @@ public class clientfunctions
         { 
             System.out.println(i); 
         } 
-       this.publickey = publickey;
+       
    }
    
    

@@ -13,8 +13,8 @@ public class clienttest
         clientfunctions client = new clientfunctions(); 
         
         client.connect("127.0.0.1", 6789);
-        client.sendstring();
-        
+
+        client.setpublickey();
     } 
     
 } 

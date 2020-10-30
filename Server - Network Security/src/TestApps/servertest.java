@@ -10,11 +10,11 @@ public class servertest
         
         serverfunctions server = new serverfunctions(); 
         
-        server.openport(6789);
+        server.openport(6789);//Server will wait for client to connect before continuing past this point
         
-        server.setpublickey();
+        server.setpublickey();//Calculates the public key
         
-        server.sendkey();
+        server.sendkey();//Sends public key to the client
         
         
     } 

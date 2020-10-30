@@ -8,8 +8,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
+import java.io.ObjectOutputStream;
+import java.io.ObjectOutputStream;
 import java.security.*;
 import java.security.spec.ECParameterSpec;
+import java.security.spec.ECGenParameterSpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.security.interfaces.ECPublicKey;
 
@@ -18,6 +21,7 @@ import javax.crypto.KeyAgreement;
 import java.util.*;
 import java.nio.ByteBuffer;
 import java.io.Console;
+import java.io.ObjectInputStream;
 
 import static javax.xml.bind.DatatypeConverter.printHexBinary;
 import static javax.xml.bind.DatatypeConverter.parseHexBinary;
@@ -27,13 +31,14 @@ public class serverfunctions
     
     private Socket          socket;
     private ServerSocket    server;
-    private DataInputStream in;
-    private DataOutputStream out;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+ 
     
         String privatekey, encrypted, decrypted;
-        byte[] publickey;
+        Object publickey;
         int port;
-        
+       // ECGenParameterSpec ecsp;
         KeyPairGenerator kpg;
         KeyPair kp;
             
@@ -41,15 +46,15 @@ public class serverfunctions
     {
         socket = null;
         server = null;
-        in = null;
-        out = null;
-        
+        //out = new ObjectOutputStream(socket.getOutputStream());
+        //in = new ObjectInputStream(socket.getInputStream());
         this.privatekey = "";
         this.publickey = null;
         this.encrypted = "";
         this.decrypted = "";
  
         this.kpg = KeyPairGenerator.getInstance("EC");
+        //ecsp = new ECGenParameterSpec("sect233r1");
         this.kpg.initialize(256);     
         this.kp = kpg.generateKeyPair();
 
@@ -76,7 +81,7 @@ public class serverfunctions
         
         try
         { 
-        in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+        in = new ObjectInputStream(socket.getInputStream());
         this.encrypted = in.readUTF();
         } 
         catch(IOException i) 
@@ -89,7 +94,7 @@ public class serverfunctions
   
     public void setpublickey()
     {
-           this.publickey = kp.getPublic().getEncoded();
+           this.publickey = kp.getPublic();
     }
     
     public void setprivatekey()
@@ -100,12 +105,28 @@ public class serverfunctions
     //Sends "publickey" to the client
     public void sendkey()//Kobe will work on this
    {
+
+
         try
         { 
-      out = new DataOutputStream(socket.getOutputStream());
+      //out = new ObjectOutputStream(socket.getOutputStream());
+      //ObjectInputStream in1 = new ObjectInputStream(socket.getInputStream()); 
       //System.out.println(printHexBinary(this.publickey));
-      out.writeUTF(printHexBinary(this.publickey));
+      
+        out = new ObjectOutputStream(socket.getOutputStream());
+        out.flush();
+        in = new ObjectInputStream(socket.getInputStream());
+      System.out.print(publickey);
+ 
+      out.writeObject(this.publickey);
+
+      //System.out.print(hi);
+      out.flush();
         } 
+        //catch(ClassNotFoundException u)
+        //{
+           // System.out.println(u);
+        //}
         catch(IOException i) 
         { 
             System.out.println(i); 

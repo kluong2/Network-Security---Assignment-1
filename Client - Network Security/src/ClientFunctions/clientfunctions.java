@@ -8,8 +8,14 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+
+import sun.misc.BASE64Decoder;
+import java.util.Base64.Decoder;
 import java.security.*;
 import java.security.spec.ECParameterSpec;
+import java.security.spec.ECGenParameterSpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.security.interfaces.ECPublicKey;
 
@@ -26,29 +32,29 @@ public class clientfunctions
 {
     
     private Socket socket; 
-    private DataInputStream  in;
-    private DataOutputStream out; 
+    private ObjectOutputStream out; 
+    private ObjectInputStream  in;
     private Socket socket1;
-    
+
     private String address;
     private int port;
     String encrypted, string;
-    byte[] publickey;
+    Object publickey;
     
     public clientfunctions()
     {
         socket = null;
-        in = null;
         out = null;
+        in = null;
         socket1 = null;
         
         this.address = address;
         this.port = port;
         this.encrypted = "";
         this.string = "";
-        this.publickey = null;
+        //this.publickey = null;
         
-
+        
         
 
         
@@ -76,7 +82,7 @@ public class clientfunctions
                       try
         { 
             // sends output to the socket 
-            out   = new DataOutputStream(socket.getOutputStream()); 
+            out   = new ObjectOutputStream(socket.getOutputStream()); 
             out.writeUTF(encrypted);
   
         } 
@@ -100,15 +106,25 @@ public class clientfunctions
         { 
             
             //takes input from terminal 
-            in = new DataInputStream(new BufferedInputStream(socket.getInputStream())); 
-            this.publickey = parseHexBinary(in.readUTF());
-            //System.out.println(printHexBinary(this.publickey));
+            System.out.println(this.publickey);
+            out = new ObjectOutputStream(socket.getOutputStream());
+            out.flush();
+            in = new ObjectInputStream(socket.getInputStream()); 
+            System.out.println("hi");
+            this.publickey = in.readObject();
+            System.out.println(this.publickey);
+            
+           
         } 
+        catch(ClassNotFoundException y)
+        {
+            System.out.println(y);
+        }
         catch(UnknownHostException u) 
         { 
             System.out.println(u); 
         } 
-        catch(IOException i) 
+       catch(IOException i) 
         { 
             System.out.println(i); 
         } 

@@ -23,8 +23,8 @@ import java.nio.ByteBuffer;
 import java.io.Console;
 import java.io.ObjectInputStream;
 
-import static javax.xml.bind.DatatypeConverter.printHexBinary;
-import static javax.xml.bind.DatatypeConverter.parseHexBinary;
+//import static javax.xml.bind.DatatypeConverter.printHexBinary;
+//import static javax.xml.bind.DatatypeConverter.parseHexBinary;
 
 public class serverfunctions 
 {
@@ -35,8 +35,10 @@ public class serverfunctions
     private ObjectOutputStream out;
  
     
-        String privatekey, encrypted, decrypted;
-        Object publickey;
+        String encrypted, decrypted;
+        
+        Object privatekey;
+        PublicKey publickey;
         int port;
        // ECGenParameterSpec ecsp;
         KeyPairGenerator kpg;
@@ -48,12 +50,12 @@ public class serverfunctions
         server = null;
         //out = new ObjectOutputStream(socket.getOutputStream());
         //in = new ObjectInputStream(socket.getInputStream());
-        this.privatekey = "";
+        this.privatekey = null;
         this.publickey = null;
         this.encrypted = "";
         this.decrypted = "";
  
-        this.kpg = KeyPairGenerator.getInstance("EC");
+        this.kpg = KeyPairGenerator.getInstance("EC", "SunEC");
         //ecsp = new ECGenParameterSpec("sect233r1");
         this.kpg.initialize(256);     
         this.kp = kpg.generateKeyPair();
@@ -97,9 +99,9 @@ public class serverfunctions
            this.publickey = kp.getPublic();
     }
     
-    public void setprivatekey()
+    public void setprivatekey() throws Exception
     {
-        
+
     }
     
     //Sends "publickey" to the client
@@ -109,14 +111,11 @@ public class serverfunctions
 
         try
         { 
-      //out = new ObjectOutputStream(socket.getOutputStream());
-      //ObjectInputStream in1 = new ObjectInputStream(socket.getInputStream()); 
-      //System.out.println(printHexBinary(this.publickey));
       
         out = new ObjectOutputStream(socket.getOutputStream());
         out.flush();
         in = new ObjectInputStream(socket.getInputStream());
-      System.out.print(publickey);
+      System.out.println(publickey);
  
       out.writeObject(this.publickey);
 

@@ -12,9 +12,12 @@ public class servertest
         
         server.openport(6789);//Server will wait for client to connect before continuing past this point
         
+        server.setprivatekey();
+        
         server.setpublickey();//Calculates the public key
         
         server.sendkey();//Sends public key to the client
+        
         
         
     } 

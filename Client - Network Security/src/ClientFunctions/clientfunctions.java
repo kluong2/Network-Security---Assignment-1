@@ -12,7 +12,7 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 
 import sun.misc.BASE64Decoder;
-import java.util.Base64.Decoder;
+//import java.util.Base64.Decoder;
 import java.security.*;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECGenParameterSpec;
@@ -25,8 +25,8 @@ import java.util.*;
 import java.nio.ByteBuffer;
 import java.io.Console;
 
-import static javax.xml.bind.DatatypeConverter.printHexBinary;
-import static javax.xml.bind.DatatypeConverter.parseHexBinary;
+//import static javax.xml.bind.DatatypeConverter.printHexBinary;
+//import static javax.xml.bind.DatatypeConverter.parseHexBinary;
 
 public class clientfunctions 
 {
@@ -79,7 +79,7 @@ public class clientfunctions
    //Sends encrypted string called "encrypted" to the server. Make sure that you run the connection function first!
    public void sendstring()//Kobe will work on this
    {
-                      try
+        try
         { 
             // sends output to the socket 
             out   = new ObjectOutputStream(socket.getOutputStream()); 
@@ -106,11 +106,9 @@ public class clientfunctions
         { 
             
             //takes input from terminal 
-            System.out.println(this.publickey);
             out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
             in = new ObjectInputStream(socket.getInputStream()); 
-            System.out.println("hi");
             this.publickey = in.readObject();
             System.out.println(this.publickey);
             

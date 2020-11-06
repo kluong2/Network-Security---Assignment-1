@@ -1,157 +1,159 @@
 package ClientFunctions;
 
-
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
-
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
+import java.io.DataOutputStream;
+import java.io.DataInputStream;
 
-import sun.misc.BASE64Decoder;
-//import java.util.Base64.Decoder;
 import java.security.*;
-import java.security.spec.ECParameterSpec;
-import java.security.spec.ECGenParameterSpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.security.interfaces.ECPublicKey;
-
-import javax.crypto.KeyAgreement;
-
 import java.util.*;
-import java.nio.ByteBuffer;
-import java.io.Console;
-
-//import static javax.xml.bind.DatatypeConverter.printHexBinary;
-//import static javax.xml.bind.DatatypeConverter.parseHexBinary;
+import javax.crypto.Cipher;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class clientfunctions 
 {
-    
     private Socket socket; 
     private ObjectOutputStream out; 
     private ObjectInputStream  in;
-    private Socket socket1;
+    private DataOutputStream output; 
+    private DataInputStream  input;
+ 
 
     private String address;
     private int port;
-    String encrypted, string;
-    Object publickey;
-    
-    public clientfunctions()
+    String string, encrypted;
+    Object key;
+    PublicKey publickey;
+    byte[] plaintext, ciphertext;
+
+        KeyPairGenerator kpg;
+        KeyPair kp;
+        
+    public clientfunctions() throws Exception
     {
-        socket = null;
-        out = null;
-        in = null;
-        socket1 = null;
-        
-        this.address = address;
-        this.port = port;
-        this.encrypted = "";
-        this.string = "";
-        //this.publickey = null;
-        
-        
-        
+        //I don't think these initializations are really needed, but I do it just in case there could be problems
+        this.socket = null;
+        this.out = null;
+        this.in = null;
 
         
-        
+        this.address = null;
+        this.port = 0;
+        this.encrypted = null;
+        this.string = null;
+        this.publickey = null;
+        this.plaintext = null;
+        this.ciphertext = null; 
     }
     
     
-   public void encrypt()//Moshe should work on this funciton
+   public void encrypt() throws Exception//Moshe should work on this function
     {
-       
-        //Do encryption on "string" with "publickey."
-        
+        //"Bouncy Castle" is a special library that you MUST use in order for encryption/decryption to work properly
+        //The class called "Cipher" does NOT support "ECIES" by default. The "Bouncy Castle" .jar files are already included in the project
+        //You shouldn't have to worry about downloading the library yourself. I've also imported everything needed from this .jar file.
+Security.addProvider(new BouncyCastleProvider());
+Cipher cipher = Cipher.getInstance("ECIES", BouncyCastleProvider.PROVIDER_NAME);
+cipher.init(Cipher.ENCRYPT_MODE, this.publickey);
+
+    this.plaintext  = this.string.getBytes("UTF-8");
+
+    this.ciphertext = cipher.doFinal(this.plaintext);
+
+            //The below loop sets up a "StringBuilder" called "sb" so that the encrypted string
+            //can be accurately put into a string variable. Many pre-defined functions that try to help with this
+            //will "mess up," I'm guessing because of the type of characters that the encrypted bytes can contain
+            //Mainly "ciphertext" can contain characters like a line-feed, space, or carriage return which can mess 
+            //up the pre-defined "helper" functions when they parse through it. 
+            StringBuilder sb = new StringBuilder();
+            for (byte b: this.ciphertext) 
+            {
+                sb.append((char)b);
+            }    
+            
+this.encrypted = sb.toString();
     }
    
    
    public void print()//Kobe will work on this
    {
+       System.out.println("The string is: \n" + this.string + "\n");
+
+       System.out.println("The encrypted string is literally: \n" + this.encrypted + "\n");
        
+       System.out.println("The public key is: \n" + this.publickey);
    }
    
    
    //Sends encrypted string called "encrypted" to the server. Make sure that you run the connection function first!
-   public void sendstring()//Kobe will work on this
+   public void sendstring() throws Exception//Kobe will work on this
    {
-        try
-        { 
-            // sends output to the socket 
-            out   = new ObjectOutputStream(socket.getOutputStream()); 
-            out.writeUTF(encrypted);
-  
-        } 
-        catch(UnknownHostException u) 
-        { 
-            System.out.println(u); 
-        } 
-        catch(IOException i) 
-        { 
-            System.out.println(i); 
-        } 
+            output = new DataOutputStream(socket.getOutputStream());
+           
+            output.writeUTF(this.encrypted);
    }
    
    
    
    //Sets public key "publickey" by getting input from server. Make sure that you are connected to the server first!
-   public void setpublickey()
+   public void setpublickey() throws Exception
    {
-       
-        try
-        { 
-            
             //takes input from terminal 
             out = new ObjectOutputStream(socket.getOutputStream());
-            out.flush();
+            out.flush();//You have to use flush and initialize the ObjectInputStream right after initializing ObjectOutputStream or the object output and input streams won't work
             in = new ObjectInputStream(socket.getInputStream()); 
-            this.publickey = in.readObject();
-            System.out.println(this.publickey);
             
-           
-        } 
-        catch(ClassNotFoundException y)
-        {
-            System.out.println(y);
-        }
-        catch(UnknownHostException u) 
-        { 
-            System.out.println(u); 
-        } 
-       catch(IOException i) 
-        { 
-            System.out.println(i); 
-        } 
-       
+            this.key = in.readObject();//ObjectOutputStream will take "PublicKey" objects just fine, but ObjectInputStream won't initialize a "PublicKey" type this way. 
+            //This is why I put it in Object "Key"
+
+	this.publickey = (PublicKey) this.key;//I then static cast "Key" to type "PublicKey" in order to ensure it will work with encryption functions properly.
    }
    
+
    
    
    //Sets up the connection to the server. Make sure that the server has an open port and is actually running first!
-   public void connect(String address, int port)
+   public void connect(String address, int port) throws Exception
    {
        this.port = port;
        this.address = address;
-        try
-        { 
+
             socket = new Socket(this.address, this.port); 
             System.out.println("Connected"); 
-        } 
-        catch(UnknownHostException u) 
-        { 
-            System.out.println(u); 
-        } 
-        catch(IOException i) 
-        { 
-            System.out.println(i); 
-        } 
    }
    
-   
+   public void setstring()//Credit to Moshe for this
+   {
+       String characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+       String randomString = "";
+              
+       Random rand = new Random();
+       
+       //Random Length of String
+       int length;
+       
+       length = rand.nextInt(99);
+       
+       char[] text = new char[length];
+       
+       for(int i = 0; i < length; i++)
+       {
+           
+       text[i] = characters.charAt(rand.nextInt(characters.length()));
+           
+       }
+       
+       for(int i = 0; i < text.length; i ++)
+       {
+           
+           randomString += text[i]; 
+           
+       }
+       System.out.println();
+
+       this.string = randomString;    
+   }
    
    
 }

@@ -18,7 +18,11 @@ public class servertest
         
         server.sendkey();//Sends public key to the client
         
+        server.receivestring();
         
+        server.decrypt();
+        
+        server.print();
         
     } 
     

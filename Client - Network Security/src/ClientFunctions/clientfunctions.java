@@ -26,9 +26,6 @@ public class clientfunctions
     Object key;
     PublicKey publickey;
     byte[] plaintext, ciphertext;
-
-        KeyPairGenerator kpg;
-        KeyPair kp;
         
     public clientfunctions() throws Exception
     {

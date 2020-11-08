@@ -249,6 +249,8 @@ this.encrypted = sb.toString();
     
     // Display their public key
     System.out.println("Their public key: \n" + tostring(this.otherpublickey) + "\n");
+    
+     System.out.println("Our private key: \n" + tostring(this.privatekey) + "\n");
         
     System.out.println("Shared secret: \n" + tostring(this.sharedsecret) + "\n");
       

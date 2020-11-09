@@ -218,7 +218,7 @@ this.encrypted = sb.toString();
        //Random Length of String
        int length;
        
-       length = rand.nextInt(98 + 1);
+       length = rand.nextInt(98) + 1;
        
        char[] text = new char[length];
        

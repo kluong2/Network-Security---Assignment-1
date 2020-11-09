@@ -73,10 +73,6 @@ public class clientfunctions
     
    public void encrypt() throws Exception//Moshe should work on this function
     {
-        //"Bouncy Castle" is a special library that you MUST use in order for encryption/decryption to work properly
-        //The class called "Cipher" does NOT support "ECIES" by default. The "Bouncy Castle" .jar files are already included in the project
-        //You shouldn't have to worry about downloading the library yourself. I've also imported everything needed from this .jar file.
- 
         
         Cipher cipher = Cipher.getInstance("AES");
 
@@ -189,7 +185,6 @@ this.encrypted = sb.toString();
     byte[] derivedKey = hash.digest();
     
     this.sharedkey = new SecretKeySpec(derivedKey, "AES");
-    
     
    }
    

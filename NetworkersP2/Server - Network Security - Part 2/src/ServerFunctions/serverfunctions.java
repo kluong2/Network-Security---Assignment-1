@@ -66,10 +66,6 @@ public class serverfunctions
     
     public void decrypt() throws Exception//Kenny and Shawn should work on this
     {
-        //"Bouncy Castle" is a special library that you MUST use in order for encryption/decryption to work properly
-        //The class called "Cipher" does NOT support "ECIES" by default. The "Bouncy Castle" .jar files are already included in the project
-        //You shouldn't have to worry about downloading the library yourself. I've also imported everything needed from this .jar file.
-        
         Cipher cipher = Cipher.getInstance("AES");
             
             //Stores the bytes of the encrypted string for decryption.
@@ -180,9 +176,6 @@ public class serverfunctions
    
     public void print()//Kobe will work on this
     {
-        
-      
-      
     // Display our public key
     System.out.println("Our public key: \n" + tostring(this.mypublickey) + "\n");
     
@@ -195,10 +188,9 @@ public class serverfunctions
       
     System.out.println("Shared key: \n" + tostring(this.sharedkey) + "\n");
     
-    
-        System.out.println("The received encrypted string was: \n" + this.encrypted + "\n");
+    System.out.println("The received encrypted string was: \n" + this.encrypted + "\n");
 
-        System.out.println("The decrypted string is: \n" + this.decrypted + "\n");
+    System.out.println("The decrypted string is: \n" + this.decrypted + "\n");
     }
    
     
